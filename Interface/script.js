@@ -1,26 +1,35 @@
-const form = document.querySelector("form")
+const button = document.querySelector("button")
 const file = document.querySelector("input")
 const reader = new FileReader()
 
-form.addEventListener("submit", async (e) => {
+button.addEventListener("click", async (e) => {
     e.preventDefault()
     
     reader.readAsText(file.files[0]);
-    reader.onload = function () {
+    reader.onload = async function (e) {
+     
     
     const document = reader.result
     
+
+    lines = Math.round(document.length / 81)
+
     let start = 0
 
     let end = 81
 
     const array = []
 
-    for(i = 0; i < 21; i++){
-        let string = document.slice(start, end)
+    for(i = 0; i < lines; i++){
+       let string = document.slice(start, end)
+
+
 
         if(i === 0){
             array.push(string.slice(0, 80))
+        }
+        else if(string === ''){
+            
         }
         else{
             array.push(string.slice(1,81))
@@ -30,11 +39,11 @@ form.addEventListener("submit", async (e) => {
 
         end = end + 82
 
-    }
+        
 
-    console.log(array)
+    }
     
-    const object = {data: array}
+    const object = JSON.stringify({data: array})
 
     const response = fetch("http://127.0.0.1:8000/api/operations/", {
         method: "POST",
@@ -44,8 +53,11 @@ form.addEventListener("submit", async (e) => {
         body: object
     }).then(res => res.json())
     .then(res => res)
+    .catch(err => console.log(err))
+
+    console.log(await response)
     
-    console.log(response)
+
 };
 })
  
